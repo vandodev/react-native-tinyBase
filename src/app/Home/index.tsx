@@ -8,6 +8,9 @@ import { Button } from "@/components/Button"
 
 //Tinybase
 import { createStore } from "tinybase"
+import {useCreatePersister} from "tinybase/ui-react"
+import * as SQLite from "expo-sqlite"
+import {createExpoSqlitePersister} from "tinybase/persisters/persister-expo-sqlite"
 
 
 const TABLE_NAME = "products"
@@ -23,6 +26,14 @@ type Product = ProductStore & {id: string}
 export function Home() {
   const [description, setDescription] = useState("")
   const [products, setProducts] = useState<Product[]>([])
+
+  useCreatePersister(
+    store,
+    (store) => createExpoSqlitePersister(store, SQLite.openDatabaseSync("database.db")),
+    [],
+    //@ts-ignore
+    (persister) => persister.load().then(persister.startAutoSave)
+  )
 
   function get(){
     const data = store.getTable(TABLE_NAME)
@@ -45,11 +56,16 @@ export function Home() {
     // console.log(id)
     store.setRow(TABLE_NAME, id, {description, done: false})
     setDescription("")
-    get()
+    // get()
   }
 
   useEffect(() => {
+    const listener = store.addTableListener(TABLE_NAME, get)
     get();
+
+    return () => {
+      store.delListener(listener)
+    }
   },[])
 
   return (
