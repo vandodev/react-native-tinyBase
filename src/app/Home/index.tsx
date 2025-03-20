@@ -59,6 +59,10 @@ export function Home() {
     // get()
   }
 
+  function remove(id: String){
+    store.delRow(TABLE_NAME, id)
+  }
+
   useEffect(() => {
     const listener = store.addTableListener(TABLE_NAME, get)
     get();
@@ -83,7 +87,7 @@ export function Home() {
       <FlatList
         data={products}
         renderItem={({ item }) => (
-          <Item data={item} onStatus={() => {}} onRemove={() => {}} />
+          <Item data={item} onStatus={() => {}} onRemove={() => remove(item.id)} />
         )}
         showsVerticalScrollIndicator={false}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
