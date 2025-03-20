@@ -13,14 +13,27 @@ import { createStore } from "tinybase"
 const TABLE_NAME = "products"
 const store = createStore()
 
+type ProductStore = {
+  description: string,
+  done: boolean
+}
+
+type Product = ProductStore & {id: string}
 
 export function Home() {
   const [description, setDescription] = useState("")
-  const [products, setProducts] = useState([])
+  const [products, setProducts] = useState<Product[]>([])
 
   function get(){
     const data = store.getTable(TABLE_NAME)
-    console.log(data)
+    // console.log(data)
+    const response = Object.entries(data).map(([id, product]) =>({
+      id,
+      description:  String(product.description),
+      done:         Boolean(product.done)
+    }))
+
+    setProducts(response)
   }
 
   function add(){
