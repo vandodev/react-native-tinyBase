@@ -63,6 +63,11 @@ export function Home() {
     store.delRow(TABLE_NAME, id)
   }
 
+  function toggleStatus(id: String){
+    const product = store.getRow(TABLE_NAME, id)
+    store.setRow(TABLE_NAME, id, {...product, done: !product.done})
+  }
+
   useEffect(() => {
     const listener = store.addTableListener(TABLE_NAME, get)
     get();
@@ -87,7 +92,7 @@ export function Home() {
       <FlatList
         data={products}
         renderItem={({ item }) => (
-          <Item data={item} onStatus={() => {}} onRemove={() => remove(item.id)} />
+          <Item data={item} onStatus={() => toggleStatus(item.id)} onRemove={() => remove(item.id)} />
         )}
         showsVerticalScrollIndicator={false}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
